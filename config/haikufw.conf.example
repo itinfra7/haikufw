@@ -1,0 +1,135 @@
+default_inbound = allow
+
+# haikufw syntax matrix
+#
+# This file is intentionally permissive and is meant to document rule syntax.
+# Every example below is commented out on purpose.
+#
+# Source selector kinds:
+# - any
+# - IPv4 host
+# - IPv4 CIDR
+# - IPv6 host
+# - IPv6 CIDR
+#
+# Port selector kinds:
+# - any
+# - single port
+# - comma-separated list
+# - range
+# - mixed list and range
+#
+# Protocol kinds:
+# - tcp
+# - udp
+# - all
+
+# tcp + any source
+# allow tcp from any to port any
+# allow tcp from any to port 22
+# allow tcp from any to port 80,443
+# allow tcp from any to port 60000-61000
+# allow tcp from any to port 53,80,443,60000-61000
+
+# tcp + IPv4 host
+# allow tcp from 203.0.113.10 to port any
+# allow tcp from 203.0.113.10 to port 22
+# allow tcp from 203.0.113.10 to port 80,443
+# allow tcp from 203.0.113.10 to port 60000-61000
+# allow tcp from 203.0.113.10 to port 53,80,443,60000-61000
+
+# tcp + IPv4 network
+# allow tcp from 203.0.113.0/24 to port any
+# allow tcp from 203.0.113.0/24 to port 22
+# allow tcp from 203.0.113.0/24 to port 80,443
+# allow tcp from 203.0.113.0/24 to port 60000-61000
+# allow tcp from 203.0.113.0/24 to port 53,80,443,60000-61000
+
+# tcp + IPv6 host
+# allow tcp from 2001:db8:100::10 to port any
+# allow tcp from 2001:db8:100::10 to port 22
+# allow tcp from 2001:db8:100::10 to port 80,443
+# allow tcp from 2001:db8:100::10 to port 60000-61000
+# allow tcp from 2001:db8:100::10 to port 53,80,443,60000-61000
+
+# tcp + IPv6 network
+# allow tcp from 2001:db8:100::/64 to port any
+# allow tcp from 2001:db8:100::/64 to port 22
+# allow tcp from 2001:db8:100::/64 to port 80,443
+# allow tcp from 2001:db8:100::/64 to port 60000-61000
+# allow tcp from 2001:db8:100::/64 to port 53,80,443,60000-61000
+
+# udp + any source
+# allow udp from any to port any
+# allow udp from any to port 53
+# allow udp from any to port 53,123
+# allow udp from any to port 60000-61000
+# allow udp from any to port 53,123,161,60000-61000
+
+# udp + IPv4 host
+# allow udp from 203.0.113.10 to port any
+# allow udp from 203.0.113.10 to port 53
+# allow udp from 203.0.113.10 to port 53,123
+# allow udp from 203.0.113.10 to port 60000-61000
+# allow udp from 203.0.113.10 to port 53,123,161,60000-61000
+
+# udp + IPv4 network
+# allow udp from 203.0.113.0/24 to port any
+# allow udp from 203.0.113.0/24 to port 53
+# allow udp from 203.0.113.0/24 to port 53,123
+# allow udp from 203.0.113.0/24 to port 60000-61000
+# allow udp from 203.0.113.0/24 to port 53,123,161,60000-61000
+
+# udp + IPv6 host
+# allow udp from 2001:db8:100::10 to port any
+# allow udp from 2001:db8:100::10 to port 53
+# allow udp from 2001:db8:100::10 to port 53,123
+# allow udp from 2001:db8:100::10 to port 60000-61000
+# allow udp from 2001:db8:100::10 to port 53,123,161,60000-61000
+
+# udp + IPv6 network
+# allow udp from 2001:db8:100::/64 to port any
+# allow udp from 2001:db8:100::/64 to port 53
+# allow udp from 2001:db8:100::/64 to port 53,123
+# allow udp from 2001:db8:100::/64 to port 60000-61000
+# allow udp from 2001:db8:100::/64 to port 53,123,161,60000-61000
+
+# all + any source
+# allow all from any to port any
+# allow all from any to port 22
+# allow all from any to port 80,443
+# allow all from any to port 60000-61000
+# allow all from any to port 53,80,443,60000-61000
+
+# all + IPv4 host
+# allow all from 203.0.113.10 to port any
+# allow all from 203.0.113.10 to port 22
+# allow all from 203.0.113.10 to port 80,443
+# allow all from 203.0.113.10 to port 60000-61000
+# allow all from 203.0.113.10 to port 53,80,443,60000-61000
+
+# all + IPv4 network
+# allow all from 203.0.113.0/24 to port any
+# allow all from 203.0.113.0/24 to port 22
+# allow all from 203.0.113.0/24 to port 80,443
+# allow all from 203.0.113.0/24 to port 60000-61000
+# allow all from 203.0.113.0/24 to port 53,80,443,60000-61000
+
+# all + IPv6 host
+# allow all from 2001:db8:100::10 to port any
+# allow all from 2001:db8:100::10 to port 22
+# allow all from 2001:db8:100::10 to port 80,443
+# allow all from 2001:db8:100::10 to port 60000-61000
+# allow all from 2001:db8:100::10 to port 53,80,443,60000-61000
+
+# all + IPv6 network
+# allow all from 2001:db8:100::/64 to port any
+# allow all from 2001:db8:100::/64 to port 22
+# allow all from 2001:db8:100::/64 to port 80,443
+# allow all from 2001:db8:100::/64 to port 60000-61000
+# allow all from 2001:db8:100::/64 to port 53,80,443,60000-61000
+
+# deny examples
+# deny tcp from any to port 60000-61000
+# deny udp from 203.0.113.0/24 to port 53,123
+# deny all from 2001:db8:200::/64 to port 25,110,143

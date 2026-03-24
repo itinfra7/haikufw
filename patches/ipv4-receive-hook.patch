@@ -1,0 +1,40 @@
+--- a/src/add-ons/kernel/network/protocols/ipv4/ipv4.cpp
++++ b/src/add-ons/kernel/network/protocols/ipv4/ipv4.cpp
+@@ -9,6 +9,7 @@
+ 
+ #include "ipv4.h"
+ #include "ipv4_address.h"
++#include "haikufw_kernel_hook.h"
+ #include "multicast.h"
+ 
+ #include <net_datalink.h>
+@@ -217,6 +218,7 @@
+ 
+ static net_protocol_module_info* sReceivingProtocol[256];
+ static mutex sReceivingProtocolLock;
++static haikufw_core_module_info* sHaikuFWCoreModule;
+ 
+ 
+ static const char*
+@@ -1858,6 +1860,13 @@
+ 	// this point
+ 	}
+ 
++	if (!haikufw_should_allow_inbound_buffer(gBufferModule, buffer,
++			buffer->source, buffer->protocol, headerLength,
++			&sHaikuFWCoreModule)) {
++		gBufferModule->free(buffer);
++		return B_OK;
++	}
++
+ 	bool rawDelivered = raw_receive_data(buffer);
+ 
+ 	// Preserve the ipv4 header for ICMP processing
+@@ -2090,6 +2099,7 @@
+ 	mutex_destroy(&sFragmentLock);
+ 	mutex_destroy(&sRawSocketsLock);
+ 	mutex_destroy(&sReceivingProtocolLock);
++	haikufw_put_core(&sHaikuFWCoreModule);
+ 
+ 	return B_OK;
+ }

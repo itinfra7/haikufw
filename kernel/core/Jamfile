@@ -1,0 +1,8 @@
+SubDir HAIKU_TOP src add-ons kernel generic haikufw_core ;
+
+UsePrivateKernelHeaders ;
+
+KernelAddon haikufw_core :
+	haikufw_core.cpp
+	haikufw_match.cpp
+;

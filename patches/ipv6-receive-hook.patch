@@ -1,0 +1,40 @@
+--- a/src/add-ons/kernel/network/protocols/ipv6/ipv6.cpp
++++ b/src/add-ons/kernel/network/protocols/ipv6/ipv6.cpp
+@@ -9,6 +9,7 @@
+ 
+ 
+ #include "ipv6_address.h"
++#include "haikufw_kernel_hook.h"
+ #include "ipv6_utils.h"
+ #include "multicast.h"
+ 
+@@ -230,6 +231,7 @@
+ 
+ static net_protocol_module_info* sReceivingProtocol[256];
+ static mutex sReceivingProtocolLock;
++static haikufw_core_module_info* sHaikuFWCoreModule;
+ 
+ 
+ uint16
+@@ -1535,6 +1537,13 @@
+ 		}
+ 	}
+ 
++	if (!haikufw_should_allow_inbound_buffer(gBufferModule, buffer,
++			buffer->source, protocol, transportHeaderOffset,
++			&sHaikuFWCoreModule)) {
++		gBufferModule->free(buffer);
++		return B_OK;
++	}
++
+ 	// tell the buffer to preserve removed ipv6 header - may need it later
+ 	gBufferModule->store_header(buffer);
+ 
+@@ -1792,6 +1801,7 @@
+ 	mutex_destroy(&sFragmentLock);
+ 	mutex_destroy(&sRawSocketsLock);
+ 	mutex_destroy(&sReceivingProtocolLock);
++	haikufw_put_core(&sHaikuFWCoreModule);
+ 
+ 	return B_OK;
+ }

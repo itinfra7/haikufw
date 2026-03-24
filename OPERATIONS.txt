@@ -1,0 +1,111 @@
+haikufw operations
+
+paths
+
+- config file: `/boot/system/settings/haikufw.conf`
+- compiled rules cache: `/boot/system/settings/haikufw.rules`
+- control device: `/dev/misc/haikufw`
+- control tool: `/boot/system/non-packaged/bin/haikufwctl`
+- boot helper: `/boot/system/non-packaged/bin/haikufw-boot.sh`
+
+install
+
+- build and install:
+  - `cd <release-root>/haikufw`
+  - `./scripts/build-haikufw-haiku.sh`
+  - `./scripts/install-haikufw.sh install`
+- reboot is required after install because the patched `ipv4` and `ipv6` protocol modules must replace the stock modules during boot.
+
+uninstall
+
+- remove runtime files and boot registration:
+  - `cd <release-root>/haikufw`
+  - `./scripts/install-haikufw.sh uninstall`
+- reboot is required after uninstall so the stock `ipv4` and `ipv6` modules are restored.
+
+config workflow
+
+1. edit `/boot/system/settings/haikufw.conf`
+2. syntax-check:
+   - `haikufwctl check /boot/system/settings/haikufw.conf`
+3. reload live rules without reinstall:
+   - `haikufwctl reload /boot/system/settings/haikufw.conf /boot/system/settings/haikufw.rules $(date +%s)`
+4. inspect current kernel state:
+   - `haikufwctl status`
+
+clear active rules
+
+- clear only the in-kernel ruleset:
+  - `haikufwctl clear`
+- this does not remove installed files and does not edit the config file.
+- after the next reboot, `haikufw-boot.sh` will reload whatever is in `/boot/system/settings/haikufw.conf`.
+
+rule format
+
+- first-match wins
+- if no rule matches, `default_inbound` is applied
+- protocol:
+  - `tcp`
+  - `udp`
+  - `all`
+- source:
+  - `any`
+  - IPv4 host
+  - IPv4 CIDR
+  - IPv6 host
+  - IPv6 CIDR
+- destination port:
+  - `any`
+  - single port such as `22`
+  - comma list such as `80,443`
+  - range such as `60000-61000`
+  - mixed list and range such as `53,80,443,60000-61000`
+
+examples
+
+- the exhaustive syntax matrix is in:
+  - `config/haikufw.conf.example`
+- representative generic examples:
+  - `allow tcp from any to port 22`
+  - `allow tcp from 203.0.113.10 to port 22`
+  - `allow tcp from 203.0.113.0/24 to port 80,443`
+  - `allow tcp from 2001:db8:100::10 to port 22`
+  - `allow tcp from 2001:db8:100::/64 to port 80,443`
+  - `allow udp from any to port 53`
+  - `allow udp from 203.0.113.0/24 to port 53,123`
+  - `allow udp from 2001:db8:100::/64 to port 53,123`
+  - `allow all from any to port 80,443`
+  - `allow all from 198.51.100.0/24 to port 60000-61000`
+  - `allow all from 2001:db8:200::/64 to port 53,80,443,60000-61000`
+  - `deny tcp from any to port 60000-61000`
+  - `deny udp from 203.0.113.0/24 to port 53,123`
+  - `deny all from 2001:db8:200::/64 to port 25,110,143`
+
+recommended rollout
+
+1. keep `default_inbound = allow` while validating syntax and reload behavior
+2. add explicit allow rules for:
+   - loopback
+   - SSH from management networks
+   - any application ports that must remain reachable
+3. switch to `default_inbound = deny`
+4. reload live rules
+5. verify:
+   - `haikufwctl status`
+   - public SSH still works
+   - required application ports still connect
+
+loopback smoke
+
+- the built-in live smoke script exercises both TCP and UDP loopback filtering:
+  - `cd <release-root>/haikufw`
+  - `./scripts/live-rule-smoke-haiku.sh`
+
+remote reboot smoke
+
+- from the control host:
+  - `python3 /storage-das/Documents/isolate/haikufw/scripts/reboot-smoke-remote.py --host <host-or-ip> --password-file /root/.sshpass_isolate --iterations 3 --settle-seconds 30`
+
+important operational note
+
+- if other inbound protocols are required in your environment, add those allow rules before switching to `default_inbound = deny`.

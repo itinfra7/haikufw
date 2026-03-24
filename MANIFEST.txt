@@ -1,0 +1,26 @@
+haikufw release contents
+
+top-level docs
+- README.md
+- README.en.txt
+- README.ko.txt
+- OPERATIONS.txt
+- LICENSE
+
+source directories
+- config/
+- kernel/
+- patches/
+- scripts/
+- tests/
+- userland/
+- vendor/
+
+notes
+- This release directory is distribution-oriented.
+- Internal planning and research notes are intentionally excluded.
+- The required Haiku IPv4/IPv6 protocol source subset is bundled under `vendor/`.
+- Build on the target Haiku host with:
+  - ./scripts/build-haikufw-haiku.sh
+- Install on the target Haiku host with:
+  - ./scripts/install-haikufw.sh install
